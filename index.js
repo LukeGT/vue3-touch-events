@@ -51,14 +51,14 @@ var vueTouchEvents = {
             return uniformBehavior || event.type.indexOf('touch') >= 0
         }
 
-        function getIsMouseEvent(event, uniformBehavior) {
-            return !uniformBehavior || event.type.indexOf('mouse') >= 0
+        function getIsMouseEvent(event) {
+            return event.type.indexOf('mouse') >= 0
         }
 
         function touchStartEvent(event) {
             var $this = this.$$touchObj,
                 isTouchEvent = getIsTouchEvent(event, $this.options.uniformBehavior),
-                isMouseEvent = getIsMouseEvent(event, $this.options.uniformBehavior),
+                isMouseEvent = getIsMouseEvent(event),
                 $el = this;
 
             if (isTouchEvent) {
@@ -178,7 +178,7 @@ var vueTouchEvents = {
         function touchEndEvent(event) {
             var $this = this.$$touchObj,
                 isTouchEvent = getIsTouchEvent(event, $this.options.uniformBehavior),
-                isMouseEvent = getIsMouseEvent(event, $this.options.uniformBehavior);
+                isMouseEvent = getIsMouseEvent(event);
 
             if (isTouchEvent) {
                 $this.lastTouchEndTime = event.timeStamp;
