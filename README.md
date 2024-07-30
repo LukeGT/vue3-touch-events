@@ -336,5 +336,5 @@ Vue.use(Vue3TouchEvents, {
 
 - `rollOverFrequency` in milliseconds - How often should `rollover` events be fired.  **Default:**  `100` MS (10 times a second).
 
-- `uniformBehavior` - Whether to treat mouse events in exactly the same way as touch events. For example, by default both a tap and hold event will trigger when the mouse is held, but if this is set to true then only the hold event will trigger.
+- `uniformHoldBehavior` - Whether to treat mouse release events in the same way as touch release events. By default, if both a tap and hold event are attached to an element, a tap event will trigger when the mouse is held and then released. Setting this to true will cause only the hold event to trigger.
 

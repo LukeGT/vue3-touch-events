@@ -11,7 +11,7 @@ export interface Vue3TouchEventsOptions {
   longTapTimeInterval?: number;
   dragFrequency?: number;
   rollOverFrequency?: number;
-  uniformBehavior?: boolean;
+  uniformHoldBehavior?: boolean;
 }
 
 export default Vue3TouchEvents;

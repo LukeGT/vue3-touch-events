@@ -44,7 +44,7 @@ var vueTouchEvents = {
             touchClass: '',
 			dragFrequency: 100, // ms
 			rollOverFrequency: 100, // ms
-            uniformBehavior: false,
+            uniformHoldBehavior: false,
         }, constructorOptions);
 
         function getIsTouchEvent(event, uniformBehavior) {
@@ -184,7 +184,7 @@ var vueTouchEvents = {
                 $this.lastTouchEndTime = event.timeStamp;
             }
 
-            var touchholdEnd = isTouchEvent && !$this.touchHoldTimer;
+            var touchholdEnd = (isTouchEvent || $this.options.uniformHoldBehavior) && !$this.touchHoldTimer;
             cancelTouchHoldTimer($this);
 
             $this.touchStarted = false;
