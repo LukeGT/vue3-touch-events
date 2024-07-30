@@ -34,7 +34,7 @@ var isPassiveSupported = (function() {
 
 var vueTouchEvents = {
     install: function (app, constructorOptions) {
-		
+
         var globalOptions = Object.assign({}, {
             disableClick: false,
             tapTolerance: 10,  // px
@@ -44,12 +44,21 @@ var vueTouchEvents = {
             touchClass: '',
 			dragFrequency: 100, // ms
 			rollOverFrequency: 100, // ms
+            uniformBehavior: false,
         }, constructorOptions);
+
+        function getIsTouchEvent(event, uniformBehavior) {
+            return uniformBehavior || event.type.indexOf('touch') >= 0
+        }
+
+        function getIsMouseEvent(event, uniformBehavior) {
+            return !uniformBehavior || event.type.indexOf('mouse') >= 0
+        }
 
         function touchStartEvent(event) {
             var $this = this.$$touchObj,
-                isTouchEvent = event.type.indexOf('touch') >= 0,
-                isMouseEvent = event.type.indexOf('mouse') >= 0,
+                isTouchEvent = getIsTouchEvent(event, $this.options.uniformBehavior),
+                isMouseEvent = getIsMouseEvent(event, $this.options.uniformBehavior),
                 $el = this;
 
             if (isTouchEvent) {
@@ -78,7 +87,7 @@ var vueTouchEvents = {
             $this.currentY = 0;
 
             $this.touchStartTime = event.timeStamp;
-			
+
 			// performance: only process swipe events if `swipe.*` event is registered on this element
 			$this.hasSwipe = hasEvent(this, 'swipe')
 				|| hasEvent(this, 'swipe.left') || hasEvent(this, 'swipe.right')
@@ -86,25 +95,25 @@ var vueTouchEvents = {
 
 			// performance: only start hold timer if the `hold` event is registered on this element
 			if (hasEvent(this, 'hold')){
-				
+
 				// Trigger touchhold event after `touchHoldTolerance` MS
 				$this.touchHoldTimer = setTimeout(function() {
 					$this.touchHoldTimer = null;
 					triggerEvent(event, $el, 'hold');
 				}, $this.options.touchHoldTolerance);
 			}
-			
+
             triggerEvent(event, this, 'press');
         }
 
         function touchMoveEvent(event) {
             var $this = this.$$touchObj;
-			
+
 			var curX = touchX(event);
 			var curY = touchY(event);
 
 			var movedAgain = ($this.currentX != curX) || ($this.currentY != curY);
-			
+
             $this.currentX = curX;
             $this.currentY = curY;
 
@@ -131,26 +140,26 @@ var vueTouchEvents = {
 
 			// only trigger `rollover` event if cursor actually moved over this element
             if(hasEvent(this, 'rollover') && movedAgain){
-				
+
 				// throttle the `rollover` event based on `rollOverFrequency`
 				var now = event.timeStamp;
 				var throttle = $this.options.rollOverFrequency;
 				if ($this.touchRollTime == null || now > ($this.touchRollTime + throttle)){
 					$this.touchRollTime = now;
-					
+
 					triggerEvent(event, this, 'rollover');
 				}
             }
 
 			// only trigger `drag` event if cursor actually moved and if we are still dragging this element
             if(hasEvent(this, 'drag') && $this.touchStarted && $this.touchMoved && movedAgain){
-				
+
 				// throttle the `drag` event based on `dragFrequency`
 				var now = event.timeStamp;
 				var throttle = $this.options.dragFrequency;
 				if ($this.touchDragTime == null || now > ($this.touchDragTime + throttle)){
 					$this.touchDragTime = now;
-					
+
 					triggerEvent(event, this, 'drag');
 				}
             }
@@ -168,8 +177,8 @@ var vueTouchEvents = {
 
         function touchEndEvent(event) {
             var $this = this.$$touchObj,
-                isTouchEvent = event.type.indexOf('touch') >= 0,
-                isMouseEvent = event.type.indexOf('mouse') >= 0;
+                isTouchEvent = getIsTouchEvent(event, $this.options.uniformBehavior),
+                isMouseEvent = getIsMouseEvent(event, $this.options.uniformBehavior);
 
             if (isTouchEvent) {
                 $this.lastTouchEndTime = event.timeStamp;
@@ -244,13 +253,13 @@ var vueTouchEvents = {
             var callbacks = $el.$$touchObj.callbacks[eventType];
 			return (callbacks != null && callbacks.length > 0);
 		}
-		
+
         function triggerEvent(e, $el, eventType, param) {
             var $this = $el.$$touchObj;
 
             // get the subscribers for this event
             var callbacks = $this.callbacks[eventType];
-			
+
 			// exit if no subscribers to this particular event
             if (callbacks == null || callbacks.length === 0) {
                 return null;
